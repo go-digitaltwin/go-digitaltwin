@@ -331,6 +331,8 @@ func (h ForestHash) String() string { return "graph(" + contentAddress(h).String
 func (h ForestHash) IsZero() bool   { return contentAddress(h).IsZero() }
 
 // HashComponents digests the given components into a ForestHash.
+// This function provides a different API than ComputeForestHash, but is
+// otherwise equivalent.
 func HashComponents(components map[ComponentID]ComponentHash) ForestHash {
 	refs := make([]ComponentID, 0, len(components))
 	for id := range components {
