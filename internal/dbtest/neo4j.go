@@ -49,13 +49,13 @@ const (
 func SetupNeo4j(t *testing.T) neo4j.DriverWithContext {
 	t.Helper()
 
-	// Always run container-based tests in parallel.
-	t.Parallel()
-
 	// Container-based tests are long-running and should respect the '-short' flag.
 	if testing.Short() {
 		t.Skip("Skipping container-based test in short mode...")
 	}
+
+	// Always run container-based tests in parallel.
+	t.Parallel()
 
 	ctx := context.Background()
 
