@@ -274,6 +274,7 @@ func (w graphWriter) retractEdges(ctx context.Context, node RawNode, label strin
 func panicWithCorruptedGraph(ctx context.Context, reason string) {
 	component.Logger(ctx).ErrorContext(ctx, "Encountered corrupted neo4j graph that violates digital-twin axioms", "error", reason)
 	trace.SpanFromContext(ctx).SetStatus(codes.Error, reason)
+	// TODO(@marombracha): let's measure the frequency of this fatality.
 	panic(fmt.Errorf("neo4j graph violates digital-twin axioms: %v", reason))
 }
 

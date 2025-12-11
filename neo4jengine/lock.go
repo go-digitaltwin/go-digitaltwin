@@ -8,6 +8,13 @@ import (
 // that two concurrent transactions might share data. Therefore, we need to
 // prevent any graph modifications while we're reading it.
 //
+// This issue caused incoherent data where attributes would flip between valid
+// values and empty states within seconds. Investigation revealed that the diff
+// calculation between snapshots (running every ~15 seconds) could observe
+// inconsistent graph states when concurrent writes modified node relationships.
+// The root cause was Neo4j's isolation not being sufficient for our read
+// consistency requirements during snapshot capture.
+//
 // To enforce this type of locking, we are introducing the graphWRMutex, an
 // adaptation of sync.RWMutex to suit the specific locking requirements within
 // the context of Neo4j graph operations, in which multiple concurrent write

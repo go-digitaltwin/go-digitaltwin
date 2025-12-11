@@ -210,10 +210,17 @@ func (e *Engine) WhatChanged(ctx context.Context) (changes digitaltwin.GraphChan
 	// Thus, we make sure that the current snapshot will not be updated, so calling
 	// WhatChanged again may recover. We do not know why some queries return rootless
 	// assemblies, but we assume this is recoverable.
+	//
+	// This issue manifests when reading a graph snapshot while concurrent write
+	// transactions are modifying it. Neo4j's isolation levels do not guarantee a
+	// consistent read in such cases, leading to assemblies appearing without their
+	// root nodes. The mitigation is to block graph change notifications containing
+	// rootless assemblies, allowing the next WhatChanged call to potentially recover.
 	if rootlessAssemblies > 0 {
 		trace.SpanFromContext(ctx).RecordError(errFoundRootlessAssemblies, trace.WithAttributes(
 			attribute.Int("changeset.rootless", rootlessAssemblies),
 			attribute.String("changeset.pretty", digitaltwin.FormatChanges(changes, "")),
+			// TODO(@danielorbach): attribute.String("changeset.binary", gob.Encode(changes)),
 		))
 		rootlessAssemblyCounter.Add(ctx, int64(rootlessAssemblies), metric.WithAttributes(
 			attribute.String("neo4j.database", e.database),

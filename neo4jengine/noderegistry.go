@@ -10,6 +10,8 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
+// TODO(@danielorbach): fix reflective parseProperties and formatProperties (e.g. visibility/networktwin/graph.go)
+
 // RawNode describes a digitaltwin.Value in a graph engine.
 type RawNode struct {
 	// The label of the node indicates its Go type, as set by Register and
