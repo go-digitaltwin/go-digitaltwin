@@ -163,7 +163,7 @@ func (b *AssemblyBuilder) Hint(n, e int) {
 //go:nocheckptr
 func noescape(p unsafe.Pointer) unsafe.Pointer {
 	x := uintptr(p)
-	return unsafe.Pointer(x ^ 0) //nolint:staticcheck,gosec // copied from the standard library
+	return unsafe.Pointer(x ^ 0) //nolint:govet,staticcheck,gosec // copied from the standard library
 }
 
 func (b *AssemblyBuilder) copyCheck() {
