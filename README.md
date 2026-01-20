@@ -3,6 +3,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/go-digitaltwin/go-digitaltwin.svg)](https://pkg.go.dev/github.com/go-digitaltwin/go-digitaltwin)
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-digitaltwin/go-digitaltwin)](https://goreportcard.com/report/github.com/go-digitaltwin/go-digitaltwin)
 [![GitHub License](https://img.shields.io/github/license/go-digitaltwin/go-digitaltwin)](LICENSE)
+[![CI](https://github.com/go-digitaltwin/go-digitaltwin/actions/workflows/ci.yml/badge.svg)](https://github.com/go-digitaltwin/go-digitaltwin/actions/workflows/ci.yml)
 
 This library offers a comprehensive module for constructing digital twins and engines to deploy them effectively.
 
