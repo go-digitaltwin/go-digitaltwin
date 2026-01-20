@@ -28,7 +28,7 @@ func BootstrapDatabase(ctx context.Context, d neo4j.DriverWithContext, name stri
 	}
 
 	s := d.NewSession(ctx, neo4j.SessionConfig{DatabaseName: name})
-	defer s.Close(ctx)
+	defer func() { _ = s.Close(ctx) }()
 
 	// create constraints and indexes for all known labels
 	_, err := s.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
