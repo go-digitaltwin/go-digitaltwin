@@ -63,6 +63,8 @@ jobs:
       - name: Review minor
         if: steps.metadata.outputs.update-type == 'version-update:semver-minor'
         uses: anthropics/claude-code-action@v1
+        env:
+          GH_REPO: ${{ github.repository }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           allowed_bots: dependabot
@@ -94,6 +96,8 @@ jobs:
       - name: Review major
         if: steps.metadata.outputs.update-type == 'version-update:semver-major'
         uses: anthropics/claude-code-action@v1
+        env:
+          GH_REPO: ${{ github.repository }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           allowed_bots: dependabot
