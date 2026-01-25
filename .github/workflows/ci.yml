@@ -13,9 +13,9 @@ name: "🚦 Integration"
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: read
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: [ stable, oldstable ]
+        go-version: [stable, oldstable]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
