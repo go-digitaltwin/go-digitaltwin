@@ -31,14 +31,14 @@ on:
     # Path filter avoids creating workflow runs for unrelated PRs while still
     # catching all Dependabot updates (Go modules and GitHub Actions).
     paths:
-      - 'go.mod'
-      - 'go.sum'
-      - '.github/workflows/**'
+      - "go.mod"
+      - "go.sum"
+      - ".github/workflows/**"
 
 permissions:
-  contents: write       # Required by: gh pr merge --auto
-  pull-requests: write  # Required by: gh pr review --approve
-  id-token: write       # Required for Claude to generate GitHub app tokens
+  contents: write # Required by: gh pr merge --auto
+  pull-requests: write # Required by: gh pr review --approve
+  id-token: write # Required for Claude to generate GitHub app tokens
 
 jobs:
   mergeview:
