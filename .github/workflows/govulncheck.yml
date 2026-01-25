@@ -58,10 +58,6 @@ jobs:
           # Generate SARIF output for Code Scanning integration
           output-format: sarif
           output-file: govulncheck-results.sarif
-          # Scan mode: analyze source code paths (more accurate than binary)
-          go-version-input: stable
-          # Continue on error to ensure SARIF upload happens
-          check-latest: true
 
       - name: Upload SARIF results to Code Scanning
         uses: github/codeql-action/upload-sarif@v3
