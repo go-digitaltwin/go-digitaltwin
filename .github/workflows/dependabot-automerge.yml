@@ -1,20 +1,48 @@
 # Dependabot Auto-merge Workflow
 #
-# Automatically merges patch-level Dependabot updates after CI passes to reduce
-# maintenance overhead for low-risk version bumps. Minor and major updates still
-# require manual review.
+# Patch and minor updates enable auto-merge; major updates require human merge:
+# - Patch: auto-approved (low-risk)
+# - Minor: Claude reviews, approves if acceptable
+# - Major: Claude advises, human must approve and merge
+#
+#   ┌────────────────────────────────────────────────────────────────────┐
+#   │                         Review & Merge                             │
+#   ├────────────────────────────────────────────────────────────────────┤
+#   │ 1. Fetch metadata                                                  │
+#   │ 2. Auto-approve patch ──────────────────────> 5. Auto-merge patch  │
+#   │ 3. Claude review minor ─────────────────────> 6. Auto-merge minor  │
+#   │ 4. Claude review major ─────────────────────> (human merge)        │
+#   └────────────────────────────────────────────────────────────────────┘
+#
+# Squash commits default to using the PR description as body, but Dependabot
+# PRs include lengthy changelogs and compatibility notes. Each step overrides
+# the body to keep commit messages clean.
 
-name: "🤖 Dependabot Auto-merge"
+name: "🤖 ClauDependabot"
 
-on: pull_request
+on:
+  # Using pull_request (not pull_request_target) because the OIDC approach for
+  # GitHub app impersonation does not appear to work with Dependabot PRs.
+  # See: https://github.com/anthropics/claude-code-action/issues/713
+  #
+  # This means Claude jobs will fail if Dependabot updates this file itself,
+  # but we've minimized actions here to reduce that risk.
+  pull_request:
+    # Path filter avoids creating workflow runs for unrelated PRs while still
+    # catching all Dependabot updates (Go modules and GitHub Actions).
+    paths:
+      - 'go.mod'
+      - 'go.sum'
+      - '.github/workflows/**'
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: write       # Required by: gh pr merge --auto
+  pull-requests: write  # Required by: gh pr review --approve
+  id-token: write       # Required for Claude to generate GitHub app tokens
 
 jobs:
-  automerge:
-    name: "🔀 Auto-merge"
+  mergeview:
+    name: Review & Merge
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
     steps:
@@ -23,17 +51,104 @@ jobs:
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
+          compat-lookup: true
 
-      - name: Auto-approve patch
+      - name: Approve patch
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
         run: gh pr review --approve -b "Patch update — auto-approved" "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Review minor
+        if: steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Git credential errors ("fatal: not in a git directory") appear because
+          # there's no local checkout. These are harmless and ignored by the action.
+          # Enabling commit signing avoids the error but enables Claude to commit
+          # via MCP, which we don't want here.
+          # use_commit_signing: true
+          prompt: |
+            This is a Dependabot PR for a minor version update.
+
+            Package ecosystem: ${{ steps.metadata.outputs.package-ecosystem }}
+            Dependency: ${{ steps.metadata.outputs.dependency-names }}
+            Update: ${{ steps.metadata.outputs.previous-version }} → ${{ steps.metadata.outputs.new-version }}
+            PR: ${{ github.event.pull_request.html_url }}
+
+            There is no local checkout of the repository. Use `gh pr diff` and
+            `gh pr view` to review the changes.
+
+            Minor updates should be backwards-compatible. If the changes look
+            reasonable, approve the PR with a message that includes your model
+            identifier (e.g. "Reviewed by claude-sonnet-4-20250514").
+
+            Use: gh pr review --approve --body "your message"
+          claude_args: >-
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr review:*)"
+            --max-turns 25
+
+      - name: Review major
+        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Git credential errors ("fatal: not in a git directory") appear because
+          # there's no local checkout. These are harmless and ignored by the action.
+          # Enabling commit signing avoids the error but enables Claude to commit
+          # via MCP, which we don't want here.
+          # use_commit_signing: true
+          prompt: |
+            This is a Dependabot PR for a MAJOR version update.
+
+            Package ecosystem: ${{ steps.metadata.outputs.package-ecosystem }}
+            Dependency: ${{ steps.metadata.outputs.dependency-names }}
+            Update: ${{ steps.metadata.outputs.previous-version }} → ${{ steps.metadata.outputs.new-version }}
+            PR: ${{ github.event.pull_request.html_url }}
+
+            There is no local checkout of the repository. Use `gh pr diff` and
+            `gh pr view` to review the changes.
+
+            Major updates may have breaking changes. Please:
+
+            1. Fetch the dependency's release page and CHANGELOG to understand what changed
+            2. Check the README for migration guides
+            3. Review the codebase for usages of this dependency
+            4. If changes are needed, comment on the PR with suggested fixes
+
+            For github_actions ecosystem specifically:
+            - Review the workflow files in .github/workflows/ that use this action
+            - Check for deprecated inputs, outputs, or runner requirements
+
+            Do NOT approve, merge, or push commits to this PR.
+            Use `gh pr review --comment` to post your analysis and any suggested code changes.
+            IMPORTANT: Place all parameters AFTER --comment (e.g., `gh pr review --comment --body "..." <PR_URL>`).
+          claude_args: >-
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr review --comment:*),Bash(gh pr review -c:*),WebFetch,WebSearch"
+            --disallowedTools "Bash(gh pr review --approve:*),Bash(gh pr review -a:*)"
+            --max-turns 50
+
       - name: Auto-merge patch
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: gh pr merge --auto --squash "$PR_URL" --body "$BODY"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BODY: |
+            This patch update was merged automatically since patch-level
+            changes carry minimal risk of breaking existing functionality.
+
+            Compatibility score: ${{ steps.metadata.outputs.compatibility-score }}%
+
+      - name: Auto-merge minor
+        if: steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        run: gh pr merge --auto --squash "$PR_URL" --body "$BODY"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BODY: |
+            This minor update was reviewed by Claude before merging.
+
+            Compatibility score: ${{ steps.metadata.outputs.compatibility-score }}%
