@@ -1,0 +1,58 @@
+# CodeQL Static Analysis Workflow
+#
+# Performs static analysis to identify potential security vulnerabilities and
+# coding errors using GitHub's CodeQL engine.
+#
+# CodeQL performs deep semantic analysis of the codebase, checking for:
+# - Security vulnerabilities (SQL injection, XSS, etc.)
+# - Code quality issues
+# - Common programming errors
+# - CWE violations
+#
+# Results are uploaded to GitHub Code Scanning for centralized tracking and
+# inline PR annotations.
+
+name: "🔍 CodeQL Analysis"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run weekly on Monday at 6:00 AM UTC
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyze:
+    name: "Analyze"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: go
+          # Optionally specify additional queries beyond the default set
+          # queries: security-extended,security-and-quality
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: stable
+
+      - name: Build
+        run: go build ./...
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:go"

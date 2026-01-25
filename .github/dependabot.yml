@@ -1,0 +1,47 @@
+# Dependabot Configuration
+#
+# Enables automated dependency management and security updates:
+#
+# 1. Dependabot Alerts: Notifies about known vulnerabilities in dependencies
+#    - Visible in the Security tab under "Dependabot alerts"
+#    - Email notifications for new vulnerabilities
+#
+# 2. Dependabot Security Updates: Auto-generates PRs to fix vulnerable dependencies
+#    - Only creates PRs for security updates (not version updates)
+#    - Respects semantic versioning constraints
+#
+# 3. GitHub Actions Updates: Keeps workflow actions up-to-date
+#    - Prevents using deprecated or vulnerable action versions
+#
+# Note: Additional Dependabot settings (alerts, security updates) must be
+# enabled in the repository's Security settings tab in the GitHub UI.
+
+version: 2
+
+updates:
+  # Monitor Go module dependencies for security vulnerabilities
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    # Only security updates enabled via repo settings
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "security"
+
+  # Keep GitHub Actions up-to-date to avoid deprecated/vulnerable versions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
