@@ -65,6 +65,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          allowed_bots: dependabot
           # Git credential errors ("fatal: not in a git directory") appear because
           # there's no local checkout. These are harmless and ignored by the action.
           # Enabling commit signing avoids the error but enables Claude to commit
@@ -95,6 +96,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          allowed_bots: dependabot
           # Git credential errors ("fatal: not in a git directory") appear because
           # there's no local checkout. These are harmless and ignored by the action.
           # Enabling commit signing avoids the error but enables Claude to commit
