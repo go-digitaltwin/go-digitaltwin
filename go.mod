@@ -1,6 +1,6 @@
 module github.com/go-digitaltwin/go-digitaltwin
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/danielorbach/go-component v1.0.0
@@ -9,9 +9,9 @@ require (
 	github.com/neo4j/neo4j-go-driver/v5 v5.28.4
 	github.com/testcontainers/testcontainers-go v0.40.0
 	github.com/testcontainers/testcontainers-go/modules/neo4j v0.40.0
-	go.opentelemetry.io/otel v1.40.0
-	go.opentelemetry.io/otel/metric v1.40.0
-	go.opentelemetry.io/otel/trace v1.40.0
+	go.opentelemetry.io/otel v1.42.0
+	go.opentelemetry.io/otel/metric v1.42.0
+	go.opentelemetry.io/otel/trace v1.42.0
 	gocloud.dev v0.44.0
 	golang.org/x/sync v0.19.0
 )
