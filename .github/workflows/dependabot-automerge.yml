@@ -90,6 +90,7 @@ jobs:
 
             Use: gh pr review --approve --body "your message"
           claude_args: >-
+            --allowedTools "Read,Glob,Grep"
             --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr review:*)"
             --max-turns 25
 
@@ -124,6 +125,7 @@ jobs:
             Use `gh pr review --comment` to post your analysis and any suggested code changes.
             IMPORTANT: Place all parameters AFTER --comment (e.g., `gh pr review --comment --body "..." <PR_URL>`).
           claude_args: >-
+            --allowedTools "Read,Glob,Grep"
             --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr review --comment:*),Bash(gh pr review -c:*),WebFetch,WebSearch"
             --disallowedTools "Bash(gh pr review --approve:*),Bash(gh pr review -a:*)"
             --max-turns 50
