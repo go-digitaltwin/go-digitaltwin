@@ -60,6 +60,14 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Checkout for review
+        uses: actions/checkout@v6
+        with:
+          # The review steps use gh (which manages its own token) rather
+          # than git push. Disabling credential persistence ensures the
+          # Claude agent cannot push even if job permissions change later.
+          persist-credentials: false
+
       - name: Review minor
         if: steps.metadata.outputs.update-type == 'version-update:semver-minor'
         uses: anthropics/claude-code-action@v1
