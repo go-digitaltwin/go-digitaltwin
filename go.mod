@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/danielorbach/go-component v1.0.0
-	github.com/docker/go-connections v0.6.0
+	github.com/docker/go-connections v0.7.0
 	github.com/google/go-cmp v0.7.0
 	github.com/neo4j/neo4j-go-driver/v5 v5.28.4
 	github.com/testcontainers/testcontainers-go v0.41.0
