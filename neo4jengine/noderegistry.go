@@ -291,7 +291,7 @@ func formatProperties(v digitaltwin.Value) (PropertyMap, error) {
 }
 
 // Used in formatProperties.
-var formatterType = reflect.TypeOf((*Formatter)(nil)).Elem()
+var formatterType = reflect.TypeFor[Formatter]()
 
 // reflectionAdapter is a wrapper around a reflected Value that implements
 // Parser and Formatter.
@@ -387,7 +387,7 @@ func (r reflectionAdapter) FormatNode() (props PropertyMap, err error) {
 		fields := reflect.VisibleFields(v.Type())
 		for _, f := range fields {
 			// skip digitaltwin.InformationElement embedded inside every digitaltwin.Value
-			if f.Name == "InformationElement" && f.Type == reflect.TypeOf(digitaltwin.InformationElement{}) {
+			if f.Name == "InformationElement" && f.Type == reflect.TypeFor[digitaltwin.InformationElement]() {
 				continue
 			}
 

@@ -30,7 +30,7 @@ func ExampleRecorder() {
 	recorder.AssertNode(nodeB)
 	recorder.AssertEdge(nodeA, nodeB)
 	recorder.RetractNode(nodeC)
-	recorder.RetractEdges(nodeA, reflect.TypeOf(TestNode{}))
+	recorder.RetractEdges(nodeA, reflect.TypeFor[TestNode]())
 
 	// Retrieve the recorded mutation steps.
 	steps := recorder.Steps()
@@ -258,7 +258,7 @@ func ExampleTargets() {
 	recorder.AssertEdge(nodeA, nodeB)
 	recorder.AssertEdge(nodeB, nodeC)
 	recorder.RetractNode(nodeC)
-	recorder.RetractEdges(nodeB, reflect.TypeOf(TestNode{})) // We DO NOT know about any nodes affected by wildcard retractions.
+	recorder.RetractEdges(nodeB, reflect.TypeFor[TestNode]()) // We DO NOT know about any nodes affected by wildcard retractions.
 	recorder.AssertOneToOne(nodeC, nodeD)
 	recorder.AssertOneToMany(nodeD, nodeE)
 	recorder.AssertManyToOne(nodeE, nodeA)

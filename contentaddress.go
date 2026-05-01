@@ -93,7 +93,7 @@ func reflectiveContentAddress(digest hash.Hash, node reflect.Value) error {
 		}
 
 		// explicitly ignore embedded InformationElement fields
-		if field.Name == "InformationElement" && field.Type == reflect.TypeOf(InformationElement{}) {
+		if field.Name == "InformationElement" && field.Type == reflect.TypeFor[InformationElement]() {
 			continue
 		}
 
