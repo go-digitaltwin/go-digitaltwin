@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/docker/go-connections/nat"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	neo4jtest "github.com/testcontainers/testcontainers-go/modules/neo4j"
 )
@@ -23,8 +22,8 @@ const Neo4jImage = "docker.io/neo4j:5-enterprise"
 // Default port of the transactional HTTP(S) endpoints:
 // <https://neo4j.com/docs/rest-docs/current>
 const (
-	neo4jHTTPS = nat.Port("7473/tcp")
-	neo4jHTTP  = nat.Port("7474/tcp")
+	neo4jHTTPS = "7473/tcp"
+	neo4jHTTP  = "7474/tcp"
 )
 
 // SetupNeo4j spins up a new Neo4j Docker container and returns a driver
