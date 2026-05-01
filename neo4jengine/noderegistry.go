@@ -305,7 +305,7 @@ type reflectionAdapter reflect.Value
 func (r reflectionAdapter) ParseNode(props PropertyMap) error {
 	v := reflect.Value(r)
 	switch v.Kind() {
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if v.IsNil() {
 			return fmt.Errorf("nil pointer")
 		}
@@ -380,7 +380,7 @@ func (r reflectionAdapter) FormatNode() (props PropertyMap, err error) {
 	props = make(PropertyMap)
 
 	switch v.Kind() {
-	case reflect.Ptr:
+	case reflect.Pointer:
 		return nil, fmt.Errorf("unsupported pointer type: %v", v.Type())
 
 	case reflect.Struct:
