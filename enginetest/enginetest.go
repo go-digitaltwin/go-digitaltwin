@@ -88,7 +88,7 @@ var cases = []testCase{
 		name:     "retract-nonexistent-edge",
 		location: locateSource(),
 		compilation: func(ctx context.Context, w digitaltwin.GraphWriter) error {
-			n, err := w.RetractEdges(ctx, NodeA{}, reflect.TypeOf(NodeB{}))
+			n, err := w.RetractEdges(ctx, NodeA{}, reflect.TypeFor[NodeB]())
 			if err != nil {
 				return err
 			}
@@ -212,7 +212,7 @@ var cases = []testCase{
 		name:     "retract-edges",
 		location: locateSource(),
 		compilation: func(ctx context.Context, w digitaltwin.GraphWriter) error {
-			n, err := w.RetractEdges(ctx, NodeC{}, reflect.TypeOf(NodeD{}))
+			n, err := w.RetractEdges(ctx, NodeC{}, reflect.TypeFor[NodeD]())
 			if err != nil {
 				return err
 			}

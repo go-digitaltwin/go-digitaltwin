@@ -93,7 +93,7 @@ func reflectiveContentAddress(digest hash.Hash, node reflect.Value) error {
 		}
 
 		// explicitly ignore embedded InformationElement fields
-		if field.Name == "InformationElement" && field.Type == reflect.TypeOf(InformationElement{}) {
+		if field.Name == "InformationElement" && field.Type == reflect.TypeFor[InformationElement]() {
 			continue
 		}
 
@@ -133,7 +133,7 @@ func reflectiveContentAddress(digest hash.Hash, node reflect.Value) error {
 		}
 
 		// unpack pointers to their underlying values (including nil pointers)
-		if value.Kind() == reflect.Ptr {
+		if value.Kind() == reflect.Pointer {
 			if !value.IsNil() {
 				value = value.Elem()
 			} else {

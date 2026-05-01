@@ -68,7 +68,7 @@ func TestBootstrapDatabase(t *testing.T) {
 				if !ok {
 					t.Fatal("Constraints table contains no labels column")
 				}
-				for _, label := range labels.([]interface{}) {
+				for _, label := range labels.([]any) {
 					if label == "someNode" {
 						found1 = true
 					}

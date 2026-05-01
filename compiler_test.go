@@ -43,7 +43,7 @@ func ExampleApplier() {
 		_ = w.AssertNode(ctx, dummyNode{Value: "A"})
 		_ = w.RetractNode(ctx, dummyNode{Value: "A"})
 		_ = w.AssertEdge(ctx, dummyNode{Value: "A"}, dummyNode{Value: "B"})
-		_, _ = w.RetractEdges(ctx, dummyNode{Value: "A"}, reflect.TypeOf(dummyNode{}))
+		_, _ = w.RetractEdges(ctx, dummyNode{Value: "A"}, reflect.TypeFor[dummyNode]())
 		return nil
 	})
 	// Output:

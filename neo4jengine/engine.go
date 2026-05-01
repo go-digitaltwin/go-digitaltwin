@@ -338,7 +338,7 @@ func (e *Engine) Apply(ctx context.Context, compilation digitaltwin.Compilation)
 
 	// We use write transactions because the neo4j SDK can provide transaction
 	// management features such as retries, error handling, and deadlock resolution.
-	_, err = s.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
+	_, err = s.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		return nil, compilation(ctx, graphWriter{tx: tx, nodeTainter: &e.taintedNodes})
 	})
 	if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {

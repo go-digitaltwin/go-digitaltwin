@@ -134,7 +134,6 @@ func (d disassembler) handleMessage(ctx context.Context, logger *slog.Logger, ms
 
 	g, ctx := errgroup.WithContext(ctx)
 	for _, c := range componentsChanges {
-		c := c
 		g.Go(func() error {
 			return d.notifyChange(ctx, logger, c)
 		})

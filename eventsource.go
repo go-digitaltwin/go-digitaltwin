@@ -29,7 +29,7 @@ type Compiler func(GraphChanged) (Compilation, error)
 func (d DigitalTwin) CompileChanges(sub *pubsub.Subscription, process Compiler) component.Proc {
 	source := EventSource{
 		subscription: sub,
-		eventType:    reflect.TypeOf(GraphChanged{}),
+		eventType:    reflect.TypeFor[GraphChanged](),
 		decoder: func(p []byte, v reflect.Value) error {
 			return gob.NewDecoder(bytes.NewReader(p)).DecodeValue(v)
 		},
