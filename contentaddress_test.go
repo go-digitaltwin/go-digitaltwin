@@ -275,7 +275,7 @@ func BenchmarkSHA1(b *testing.B) {
 	for _, count := range allocs {
 		// items are populated before the sub-benchmark so that each
 		items := make([]SHA1, count)
-		for i := 0; i < len(items); i++ {
+		for i := range items {
 			h := sha1.New()
 			err := binary.Write(h, binary.BigEndian, int64(i)) // can only use binary.Write with fixed-size types
 			if err != nil {
