@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"encoding/gob"
+	"maps"
 	"sort"
 	"unsafe"
 )
@@ -34,9 +35,7 @@ func (b *AssemblyBuilder) Assemble() Assembly {
 	// copy nodes map to allow further modifications to the builder
 	if len(b.nodes) != 0 {
 		g.Vertices = make(map[NodeHash]Value, len(b.nodes))
-		for id, n := range b.nodes {
-			g.Vertices[id] = n
-		}
+		maps.Copy(g.Vertices, b.nodes)
 	}
 
 	// copy edges map to allow further modifications to the builder
@@ -109,9 +108,7 @@ func (b *AssemblyBuilder) Roots(root ...Value) {
 func (b *AssemblyBuilder) hintNodes(n int) {
 	// the calculation (i.e., len = 2*len + extra) is based on strings/builder.go (Builder.Grow)
 	nodes := make(map[NodeHash]Value, 2*len(b.nodes)+n)
-	for k, v := range b.nodes {
-		nodes[k] = v
-	}
+	maps.Copy(nodes, b.nodes)
 	b.nodes = nodes
 }
 
