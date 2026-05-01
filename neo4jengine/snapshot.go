@@ -148,7 +148,7 @@ func fetchPartialAssemblies(ctx context.Context, s neo4j.SessionWithContext, tai
 	ctx, span := tracer.Start(ctx, "fetchPartialAssemblies")
 	defer span.End()
 
-	work := func(tx neo4j.ManagedTransaction) (interface{}, error) {
+	work := func(tx neo4j.ManagedTransaction) (any, error) {
 		// We use a map to track disjoint graph components and their respective hashes,
 		// to ensure consistency during graph read iterations, since we do not fully
 		// understand Neo4j's isolation levels.
@@ -307,13 +307,13 @@ func parseNeo4jNode(node neo4j.Node) (digitaltwin.Value, error) {
 }
 
 func parseNeighbours(record *neo4j.Record, builder *digitaltwin.AssemblyBuilder) error {
-	tuples, err := getRecordProperty[[]interface{}](record, "tuples")
+	tuples, err := getRecordProperty[[]any](record, "tuples")
 	if err != nil {
 		return fmt.Errorf("get tuples :%w", err)
 	}
 
 	for i, tuple := range tuples {
-		edge, ok := tuple.(map[string]interface{})
+		edge, ok := tuple.(map[string]any)
 		if !ok {
 			return fmt.Errorf("neighbour tuple #%v: %w", i, unexpectedPropertyTypeError{Type: reflect.TypeOf(tuple)})
 		}
@@ -337,7 +337,7 @@ func parseNeighbours(record *neo4j.Record, builder *digitaltwin.AssemblyBuilder)
 
 // Call parseNeighbour with a single "tuple" from the "tuples" slice, as
 // collected by the Cypher query defined at fetchAssemblies.
-func parseNeighbour(edge map[string]interface{}, builder *digitaltwin.AssemblyBuilder) error {
+func parseNeighbour(edge map[string]any, builder *digitaltwin.AssemblyBuilder) error {
 	// Construct the source node of the edge.
 	from, ok := edge["from"]
 	if !ok {
@@ -477,7 +477,7 @@ func (s snapshot) Update(changes digitaltwin.GraphChanged) {
 // all of them would be troublesome. When a new type is necessary, developers can
 // simply add it to the list here.
 type recordProperty interface {
-	int64 | string | neo4j.Node | []interface{}
+	int64 | string | neo4j.Node | []any
 }
 
 func getRecordProperty[T recordProperty](record *neo4j.Record, key string) (value T, err error) {

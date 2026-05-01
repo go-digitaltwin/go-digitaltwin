@@ -233,7 +233,7 @@ func (w graphWriter) retractEdges(ctx context.Context, node RawNode, label strin
 		DELETE e
 		RETURN count(e) as edges, COLLECT(DISTINCT taint) AS taints
 	`
-	result, err := w.tx.Run(ctx, query, map[string]interface{}{
+	result, err := w.tx.Run(ctx, query, map[string]any{
 		"from": string(ca),
 	})
 	if err != nil {
@@ -282,7 +282,7 @@ func panicWithCorruptedGraph(ctx context.Context, reason string) {
 // query in the individual graphWriter methods) that change during a graph
 // modification.
 func parseTaintedNodes(record *neo4j.Record) (taints []RawNode, err error) {
-	nodes, err := getRecordProperty[[]interface{}](record, "taints")
+	nodes, err := getRecordProperty[[]any](record, "taints")
 	if err != nil {
 		return nil, fmt.Errorf("get taints: %w", err)
 	}

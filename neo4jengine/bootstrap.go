@@ -31,7 +31,7 @@ func BootstrapDatabase(ctx context.Context, d neo4j.DriverWithContext, name stri
 	defer func() { _ = s.Close(ctx) }()
 
 	// create constraints and indexes for all known labels
-	_, err := s.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
+	_, err := s.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		for _, l := range KnownLabels() {
 			// we use key constraint instead of uniqueness constraint because we can
 			// (it is only available in the enterprise edition).
@@ -69,7 +69,7 @@ func createDatabase(ctx context.Context, d neo4j.DriverWithContext, name string)
 	// create a new database if it does not exist
 	_, err := s.Run(ctx, `
 			CREATE DATABASE $name IF NOT EXISTS
-		`, map[string]interface{}{
+		`, map[string]any{
 		"name": name,
 	})
 	return err
