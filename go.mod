@@ -8,9 +8,9 @@ require (
 	github.com/neo4j/neo4j-go-driver/v5 v5.28.4
 	github.com/testcontainers/testcontainers-go v0.42.0
 	github.com/testcontainers/testcontainers-go/modules/neo4j v0.42.0
-	go.opentelemetry.io/otel v1.43.0
-	go.opentelemetry.io/otel/metric v1.43.0
-	go.opentelemetry.io/otel/trace v1.43.0
+	go.opentelemetry.io/otel v1.44.0
+	go.opentelemetry.io/otel/metric v1.44.0
+	go.opentelemetry.io/otel/trace v1.44.0
 	gocloud.dev v0.45.0
 	golang.org/x/sync v0.20.0
 )
