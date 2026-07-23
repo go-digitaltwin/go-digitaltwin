@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"fmt"
 	"iter"
 	"reflect"
 
@@ -28,6 +29,7 @@ func init() {
 	gob.Register(assertOneToMany{})
 	gob.Register(assertManyToOne{})
 	gob.Register(assertManyToMany{})
+	gob.Register(assertOneToThese{})
 }
 
 // An assertNode is a Step that ensures a specific node exists in the graph.
@@ -229,6 +231,72 @@ func (s assertManyToMany) Targets() iter.Seq[digitaltwin.Value] {
 		}
 		if !yield(s.Target) {
 			return
+		}
+	}
+}
+
+// assertOneToThese is a Step that forms a one-to-many relationship from a
+// source node to multiple target nodes who share a label, making sure those
+// targets are the only nodes of said label connected to the source. An empty
+// TargetNodes detaches the source from every node of TargetType.
+type assertOneToThese struct {
+	Source      digitaltwin.Value
+	TargetType  reflect.Type
+	TargetNodes []digitaltwin.Value
+}
+
+// GobEncode represents TargetType as a zero-value sentinel of that type, since
+// reflect.Type is not directly serialisable. This mirrors retractEdges, which
+// carries a node kind across the same process boundary.
+func (s assertOneToThese) GobEncode() ([]byte, error) {
+	if s.TargetType == nil {
+		return nil, fmt.Errorf("target type must not be nil")
+	}
+
+	var b bytes.Buffer
+	enc := gob.NewEncoder(&b)
+	if err := enc.Encode(&s.Source); err != nil {
+		return nil, err
+	}
+	sentinel := reflect.Zero(s.TargetType).Interface()
+	if err := enc.Encode(&sentinel); err != nil {
+		return nil, err
+	}
+	if err := enc.Encode(&s.TargetNodes); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func (s *assertOneToThese) GobDecode(data []byte) error {
+	dec := gob.NewDecoder(bytes.NewReader(data))
+	if err := dec.Decode(&s.Source); err != nil {
+		return err
+	}
+	var sentinel digitaltwin.Value
+	if err := dec.Decode(&sentinel); err != nil {
+		return err
+	}
+	s.TargetType = reflect.TypeOf(sentinel)
+	if err := dec.Decode(&s.TargetNodes); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s assertOneToThese) Do(ctx context.Context, w digitaltwin.GraphWriter) error {
+	return assert.Graph(w).OneToThese(ctx, s.Source, s.TargetType, s.TargetNodes)
+}
+
+func (s assertOneToThese) Targets() iter.Seq[digitaltwin.Value] {
+	return func(yield func(digitaltwin.Value) bool) {
+		if !yield(s.Source) {
+			return
+		}
+		for _, target := range s.TargetNodes {
+			if !yield(target) {
+				return
+			}
 		}
 	}
 }

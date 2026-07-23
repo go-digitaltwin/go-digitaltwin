@@ -50,7 +50,7 @@ func ExampleApplier() {
 	// + (A)
 	// - (A)
 	// (A) -> (B)
-	// (A) <-/-> digitaltwin_test.dummyNode
+	// (A) -/> digitaltwin_test.dummyNode
 }
 
 // A dummyNode demonstrates a node in the graph for the examples in this package.
@@ -88,6 +88,6 @@ func (x printApplier) AssertEdge(ctx context.Context, from, to digitaltwin.Value
 }
 
 func (x printApplier) RetractEdges(_ context.Context, node digitaltwin.Value, kind reflect.Type) (n int, err error) {
-	fmt.Println(node, "<-/->", kind)
+	fmt.Println(node, "-/>", kind)
 	return 0, nil
 }
