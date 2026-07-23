@@ -170,6 +170,11 @@ func ExampleRecorder_relationshipAssertions() {
 	goSkill := TestNode{Value: "Go Programming (Skill)"}
 	pythonSkill := TestNode{Value: "Python Programming (Skill)"}
 
+	// OneToThese: Dana initially has a JavaScript skill, then her skills are
+	// replaced with Go and Python. The second call replaces the entire set.
+	dana := TestNode{Value: "Dana (Employee)"}
+	jsSkill := TestNode{Value: "JavaScript (Skill)"}
+
 	// Record a sequence of relationship assertions. Each call to an AssertXxxYyy
 	// method on the recorder adds a corresponding step to its internal list. These
 	// steps represent the intended graph mutations.
@@ -182,6 +187,8 @@ func ExampleRecorder_relationshipAssertions() {
 	recorder.AssertManyToMany(bob, goSkill)
 	recorder.AssertManyToMany(charlie, goSkill)
 	recorder.AssertManyToMany(bob, pythonSkill) // Bob also possesses Python skill.
+	recorder.AssertOneToThese(dana, reflect.TypeOf(TestNode{}), jsSkill)
+	recorder.AssertOneToThese(dana, reflect.TypeOf(TestNode{}), goSkill, pythonSkill)
 
 	// Retrieve the recorded relationship assertion steps.
 	steps := recorder.Steps()
@@ -213,10 +220,10 @@ func ExampleRecorder_relationshipAssertions() {
 	}
 	// Output:
 	// Recording relationship assertion steps:
-	// Recorded 8 relationship steps
+	// Recorded 10 relationship steps
 	//
 	// Decoding relationship steps:
-	// Decoded 8 relationship steps
+	// Decoded 10 relationship steps
 	//
 	// Replaying decoded relationship steps:
 	// (Alice (Person)) <-/-> compilation_test.TestNode
@@ -233,6 +240,14 @@ func ExampleRecorder_relationshipAssertions() {
 	// (Bob (Employee)) -> (Go Programming (Skill))
 	// (Charlie (Employee)) -> (Go Programming (Skill))
 	// (Bob (Employee)) -> (Python Programming (Skill))
+	// (Dana (Employee)) <-/-> compilation_test.TestNode
+	// (JavaScript (Skill)) <-/-> compilation_test.TestNode
+	// (Dana (Employee)) -> (JavaScript (Skill))
+	// (Dana (Employee)) <-/-> compilation_test.TestNode
+	// (Go Programming (Skill)) <-/-> compilation_test.TestNode
+	// (Dana (Employee)) -> (Go Programming (Skill))
+	// (Python Programming (Skill)) <-/-> compilation_test.TestNode
+	// (Dana (Employee)) -> (Python Programming (Skill))
 }
 
 // We demonstrate how Targets extracts the unique set of nodes that will be

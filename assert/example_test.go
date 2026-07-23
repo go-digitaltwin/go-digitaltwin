@@ -20,6 +20,8 @@ func CommonRelationships(ctx context.Context, w digitaltwin.GraphWriter) error {
 	_ = assert.Graph(w).ManyToOne(ctx, Node{C: 'E'}, Node{C: 'F'})
 	fmt.Println("-- many to many --")
 	_ = assert.Graph(w).ManyToMany(ctx, Node{C: 'G'}, Node{C: 'H'})
+	fmt.Println("-- one to these --")
+	_ = assert.Graph(w).OneToThese(ctx, Node{C: 'I'}, reflect.TypeOf(Node{}), []digitaltwin.Value{Node{C: 'J'}, Node{C: 'K'}})
 	return nil
 }
 
@@ -41,6 +43,8 @@ func Example() {
 	// many nodes of type assert_test.Node may associate with (F)
 	// -- many to many --
 	// (G) -> (H)
+	// -- one to these --
+	// (I) is exclusively connected to the following assert_test.Node nodes: [(J) (K)]
 }
 
 // A Node represents an exemplar value in the graph for the examples in this
@@ -84,5 +88,10 @@ func (x printApplier) RetractEdges(_ context.Context, node digitaltwin.Value, ki
 
 func (x printApplier) AssertManyToOne(ctx context.Context, source, target digitaltwin.Value) error {
 	fmt.Printf("many nodes of type %T may associate with %v\n", source, target)
+	return nil
+}
+
+func (x printApplier) AssertOneToThese(ctx context.Context, source digitaltwin.Value, targetType reflect.Type, targets []digitaltwin.Value) error {
+	fmt.Printf("%v is exclusively connected to the following %v nodes: %v\n", source, targetType, targets)
 	return nil
 }
