@@ -90,7 +90,7 @@ func ExampleRecorder() {
 	// + (B)
 	// (A) -> (B)
 	// - (C)
-	// (A) <-/-> compilation_test.TestNode
+	// (A) -/> compilation_test.TestNode
 	//
 	// Modified steps length: 0
 	// Original recorder steps length: 5
@@ -136,7 +136,7 @@ func (w PrintGraphWriter) AssertEdge(ctx context.Context, from, to digitaltwin.V
 }
 
 func (w PrintGraphWriter) RetractEdges(ctx context.Context, node digitaltwin.Value, kind reflect.Type) (int, error) {
-	fmt.Println(node, "<-/->", kind)
+	fmt.Println(node, "-/>", kind)
 	return 0, nil
 }
 
@@ -226,27 +226,27 @@ func ExampleRecorder_relationshipAssertions() {
 	// Decoded 10 relationship steps
 	//
 	// Replaying decoded relationship steps:
-	// (Alice (Person)) <-/-> compilation_test.TestNode
-	// (Alice's Passport) <-/-> compilation_test.TestNode
+	// (Alice (Person)) -/> compilation_test.TestNode
+	// (Alice's Passport) -/> compilation_test.TestNode
 	// (Alice (Person)) -> (Alice's Passport)
-	// (Bob (Employee)) <-/-> compilation_test.TestNode
+	// (Bob (Employee)) -/> compilation_test.TestNode
 	// (OneLayer (Company)) -> (Bob (Employee))
-	// (Charlie (Employee)) <-/-> compilation_test.TestNode
+	// (Charlie (Employee)) -/> compilation_test.TestNode
 	// (OneLayer (Company)) -> (Charlie (Employee))
-	// (Q1 Report) <-/-> compilation_test.TestNode
+	// (Q1 Report) -/> compilation_test.TestNode
 	// (Q1 Report) -> (Alice (Person))
-	// (Q2 Report) <-/-> compilation_test.TestNode
+	// (Q2 Report) -/> compilation_test.TestNode
 	// (Q2 Report) -> (Alice (Person))
 	// (Bob (Employee)) -> (Go Programming (Skill))
 	// (Charlie (Employee)) -> (Go Programming (Skill))
 	// (Bob (Employee)) -> (Python Programming (Skill))
-	// (Dana (Employee)) <-/-> compilation_test.TestNode
-	// (JavaScript (Skill)) <-/-> compilation_test.TestNode
+	// (Dana (Employee)) -/> compilation_test.TestNode
+	// (JavaScript (Skill)) -/> compilation_test.TestNode
 	// (Dana (Employee)) -> (JavaScript (Skill))
-	// (Dana (Employee)) <-/-> compilation_test.TestNode
-	// (Go Programming (Skill)) <-/-> compilation_test.TestNode
+	// (Dana (Employee)) -/> compilation_test.TestNode
+	// (Go Programming (Skill)) -/> compilation_test.TestNode
 	// (Dana (Employee)) -> (Go Programming (Skill))
-	// (Python Programming (Skill)) <-/-> compilation_test.TestNode
+	// (Python Programming (Skill)) -/> compilation_test.TestNode
 	// (Dana (Employee)) -> (Python Programming (Skill))
 }
 
