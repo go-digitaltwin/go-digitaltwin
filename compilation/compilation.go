@@ -240,3 +240,15 @@ func (r *Recorder) AssertManyToOne(source, target digitaltwin.Value) {
 func (r *Recorder) AssertManyToMany(source, target digitaltwin.Value) {
 	r.steps = append(r.steps, assertManyToMany{Source: source, Target: target})
 }
+
+// AssertOneToThese records a mutation step that will assert a one-to-many
+// relationship from the source node to any of the provided target nodes.
+// targetType is the type of the target nodes, given explicitly so the step
+// can identify the edges to replace even when targetNodes is empty.
+//
+// When replayed, this step ensures that the source node is connected to all
+// and only the specified target nodes. An empty targetNodes clears the
+// relationship, detaching the source from every node of targetType.
+func (r *Recorder) AssertOneToThese(source digitaltwin.Value, targetType reflect.Type, targetNodes ...digitaltwin.Value) {
+	r.steps = append(r.steps, assertOneToThese{Source: source, TargetType: targetType, TargetNodes: targetNodes})
+}
