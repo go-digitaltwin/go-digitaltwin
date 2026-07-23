@@ -302,3 +302,59 @@ func newGraphIntegrityError(relationship, direction string, affectedEdges int) e
 	}
 	return fmt.Errorf("inconsistent graph detected: relationship %v was violated with %v affected edges %v", relationship, affectedEdges, direction)
 }
+
+// OneToThese asserts that the given source is connected to every given target,
+// and to no other node of targetType, the kind of node the relationship's
+// edges point at. All targets must be of targetType, which must not be nil.
+//
+// An empty target set clears the relationship: the source is detached from
+// every node of targetType.
+//
+// If the underlying GraphWriter implements the OneToTheseAsserter interface,
+// its specialised implementation is called instead.
+func (a relationshipWriter) OneToThese(ctx context.Context, source digitaltwin.Value, targetType reflect.Type, targets []digitaltwin.Value) error {
+	if targetType == nil {
+		return fmt.Errorf("target type must not be nil")
+	}
+
+	for _, target := range targets {
+		if reflect.TypeOf(target) != targetType {
+			return fmt.Errorf("all targets must be of type %v: got %T", targetType, target)
+		}
+	}
+
+	if x, ok := a.GraphWriter.(OneToTheseAsserter); ok {
+		return x.AssertOneToThese(ctx, source, targetType, targets)
+	}
+
+	_, err := a.RetractEdges(ctx, source, targetType)
+	if err != nil {
+		return fmt.Errorf("retract edges from: %w", err)
+	}
+
+	for _, target := range targets {
+		if err := a.OneToMany(ctx, source, target); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// OneToTheseAsserter is the interface implemented by [digitaltwin.GraphWriter]
+// types that specialise in asserting one-to-many structure in digital-twin
+// graphs.
+//
+// Following a call to AssertOneToThese, the graph must ensure that:
+// source is connected to all targets, and no other nodes of the same type as
+// targets are connected to source.
+type OneToTheseAsserter interface {
+	// AssertOneToThese returns a nil error after it had successfully asserted an
+	// edge connects the given source and the given targets, and them alone.
+	// targetType identifies the kind of node the edges point at, allowing an
+	// empty target set to clear the relationship.
+	//
+	// Otherwise, it returns a non-nil error and the graph may have been partially
+	// modified. Callers should be aware of that and manage rollback on their own.
+	AssertOneToThese(ctx context.Context, source digitaltwin.Value, targetType reflect.Type, targets []digitaltwin.Value) error
+}
