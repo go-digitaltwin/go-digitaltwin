@@ -61,7 +61,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout for review
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # The review steps use gh (which manages its own token) rather
           # than git push. Disabling credential persistence ensures the
