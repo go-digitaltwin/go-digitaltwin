@@ -1,6 +1,6 @@
 module github.com/go-digitaltwin/go-digitaltwin
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/danielorbach/go-component v1.0.0
@@ -12,7 +12,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.46.0
 	go.opentelemetry.io/otel/trace v1.46.0
 	gocloud.dev v0.46.0
-	golang.org/x/sync v0.22.0
+	golang.org/x/sync v0.23.0
 )
 
 require (
