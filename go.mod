@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/danielorbach/go-component v1.0.0
 	github.com/google/go-cmp v0.7.0
-	github.com/neo4j/neo4j-go-driver/v5 v5.28.4
+	github.com/neo4j/neo4j-go-driver/v5 v5.28.5
 	github.com/testcontainers/testcontainers-go v0.44.0
 	github.com/testcontainers/testcontainers-go/modules/neo4j v0.44.0
 	go.opentelemetry.io/otel v1.46.0
